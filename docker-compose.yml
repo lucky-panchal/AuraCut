@@ -1,5 +1,3 @@
-version: "3.9"
-
 # Auracut — Full stack via a single `docker-compose up`
 # All configuration is read from .env — no hardcoded values.
 # Services: db, redis, backend (Daphne ASGI), worker (Celery), frontend (Vite dev)
