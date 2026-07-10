@@ -11,8 +11,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # App URLs registered here as tasks are completed
-    # Task 3: path("api/auth/", include("apps.accounts.urls")),
+    path("api/auth/", include("apps.accounts.urls")),
+
+    # Registered as tasks are completed
     # Task 4: path("api/projects/", include("apps.projects.urls")),
     # Task 5: path("api/", include("apps.assets.urls")),
     # Task 7: path("api/", include("apps.export.urls")),
