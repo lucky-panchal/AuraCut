@@ -4,11 +4,7 @@ import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import ProfilePage from './features/auth/ProfilePage';
 import DashboardPage from './features/dashboard/DashboardPage';
-
-// Placeholder — filled in by task 19
-function EditorPage() {
-  return <div>Editor (task 19)</div>;
-}
+import EditorPage from './features/editor/EditorPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.accessToken);
