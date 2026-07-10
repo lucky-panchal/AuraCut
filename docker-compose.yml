@@ -1,7 +1,8 @@
 version: "3.9"
 
 # Auracut — Full stack via a single `docker-compose up`
-# Services: db, redis, backend (Daphne), worker (Celery), frontend (Vite)
+# All configuration is read from .env — no hardcoded values.
+# Services: db, redis, backend (Daphne ASGI), worker (Celery), frontend (Vite dev)
 
 services:
 
@@ -39,7 +40,7 @@ services:
       - ./backend:/app
       - media_files:/app/media
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -52,7 +53,6 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
-    # Override entrypoint — worker does not run migrations or Daphne
     entrypoint: []
     command: celery -A config.celery worker --loglevel=info --concurrency=2
     volumes:
@@ -70,7 +70,7 @@ services:
     volumes:
       - ./frontend:/app
     ports:
-      - "5173:5173"
+      - "${FRONTEND_PORT:-5173}:5173"
     command: sh -c "npm install && npm run dev -- --host"
     depends_on:
       - backend
