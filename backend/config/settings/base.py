@@ -4,7 +4,9 @@ Environment-specific overrides live in development.py / production.py.
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
+
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -136,14 +138,16 @@ REST_FRAMEWORK = {
 
 # --- SimpleJWT ---
 
-from datetime import timedelta
-
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
+    # Use Django's integer User.id in token claims
+    # (UserProfile uses UUID but auth token references auth.User)
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
 }
 
 # --- File Storage ---
