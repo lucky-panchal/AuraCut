@@ -9,6 +9,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from apps.assets.urls import project_asset_urlpatterns, asset_urlpatterns
+from apps.export.urls import export_urlpatterns
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -17,8 +18,7 @@ urlpatterns = [
     path("api/projects/", include("apps.projects.urls")),
     path("api/", include(project_asset_urlpatterns)),
     path("api/", include(asset_urlpatterns)),
-
-    # Task 7: path("api/", include("apps.export.urls")),
+    path("api/", include(export_urlpatterns)),
 ]
 
 # Serve media files in development
