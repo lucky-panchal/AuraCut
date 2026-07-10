@@ -1,0 +1,80 @@
+version: "3.9"
+
+# Auracut — Full stack via a single `docker-compose up`
+# Services: db, redis, backend (Daphne), worker (Celery), frontend (Vite)
+
+services:
+
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./backend:/app
+      - media_files:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    # Override entrypoint — worker does not run migrations or Daphne
+    entrypoint: []
+    command: celery -A config.celery worker --loglevel=info --concurrency=2
+    volumes:
+      - ./backend:/app
+      - media_files:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  media_files:
