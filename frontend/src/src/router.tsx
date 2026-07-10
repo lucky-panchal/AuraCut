@@ -3,11 +3,9 @@ import useAuthStore from './store/useAuthStore';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import ProfilePage from './features/auth/ProfilePage';
+import DashboardPage from './features/dashboard/DashboardPage';
 
-// Lazy placeholders — filled in by tasks 11 and 19
-function DashboardPage() {
-  return <div>Dashboard (task 11)</div>;
-}
+// Placeholder — filled in by task 19
 function EditorPage() {
   return <div>Editor (task 19)</div>;
 }
