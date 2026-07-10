@@ -24,22 +24,17 @@ export default function EditorPage() {
   const [selectedClipId, setSelectedClipId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { setCurrentProject, saveStatus } = useProjectStore((s) => ({
-    setCurrentProject: s.setCurrentProject,
-    saveStatus: s.saveStatus,
-  }));
+  const setCurrentProject = useProjectStore((s) => s.setCurrentProject);
+  const saveStatus = useProjectStore((s) => s.saveStatus);
 
-  const { loadTimeline, undo, redo, splitClip, deleteClip, playhead_position, isDirty, markClean } =
-    useTimelineStore((s) => ({
-      loadTimeline: s.loadTimeline,
-      undo: s.undo,
-      redo: s.redo,
-      splitClip: s.splitClip,
-      deleteClip: s.deleteClip,
-      playhead_position: s.playhead_position,
-      isDirty: s.isDirty,
-      markClean: s.markClean,
-    }));
+  const loadTimeline = useTimelineStore((s) => s.loadTimeline);
+  const undo = useTimelineStore((s) => s.undo);
+  const redo = useTimelineStore((s) => s.redo);
+  const splitClip = useTimelineStore((s) => s.splitClip);
+  const deleteClip = useTimelineStore((s) => s.deleteClip);
+  const playhead_position = useTimelineStore((s) => s.playhead_position);
+  const isDirty = useTimelineStore((s) => s.isDirty);
+  const markClean = useTimelineStore((s) => s.markClean);
 
   // Auto-save hook
   useAutoSave(projectId!);

@@ -4,7 +4,8 @@ import useAuthStore from '../../store/useAuthStore';
 import { updateProfile } from '../../api/auth';
 
 export default function ProfilePage() {
-  const { user, setUser } = useAuthStore((s) => ({ user: s.user, setUser: s.setUser }));
+  const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
 
   const [displayName, setDisplayName] = useState(user?.display_name ?? '');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);

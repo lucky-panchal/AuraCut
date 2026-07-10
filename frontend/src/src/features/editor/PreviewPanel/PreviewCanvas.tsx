@@ -13,17 +13,13 @@ export default function PreviewCanvas() {
   const rafRef = useRef<number | null>(null);
   const lastTickRef = useRef<number>(0);
 
-  const { isPlaying, currentFrame, lastServerFrame, setCurrentFrame } = usePreviewStore((s) => ({
-    isPlaying: s.isPlaying,
-    currentFrame: s.currentFrame,
-    lastServerFrame: s.lastServerFrame,
-    setCurrentFrame: s.setCurrentFrame,
-  }));
+  const isPlaying = usePreviewStore((s) => s.isPlaying);
+  const currentFrame = usePreviewStore((s) => s.currentFrame);
+  const lastServerFrame = usePreviewStore((s) => s.lastServerFrame);
+  const setCurrentFrame = usePreviewStore((s) => s.setCurrentFrame);
 
-  const { duration, tracks } = useTimelineStore((s) => ({
-    duration: s.duration,
-    tracks: s.tracks,
-  }));
+  const duration = useTimelineStore((s) => s.duration);
+  const tracks = useTimelineStore((s) => s.tracks);
 
   // Init Fabric canvas
   useEffect(() => {

@@ -6,11 +6,9 @@ import ProjectCard from './ProjectCard';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { projects, fetchProjects, createProject } = useProjectStore((s) => ({
-    projects: s.projects,
-    fetchProjects: s.fetchProjects,
-    createProject: s.createProject,
-  }));
+  const projects = useProjectStore((s) => s.projects);
+  const fetchProjects = useProjectStore((s) => s.fetchProjects);
+  const createProject = useProjectStore((s) => s.createProject);
 
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);

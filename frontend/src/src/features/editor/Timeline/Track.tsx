@@ -19,7 +19,7 @@ function hasOverlap(clips: TrackType['clips'], clipId: string): boolean {
 }
 
 export default function Track({ track, zoom, selectedClipId, onSelectClip }: Props) {
-  const { trimClip } = useTimelineStore((s) => ({ trimClip: s.trimClip }));
+  const trimClip = useTimelineStore((s) => s.trimClip);
 
   const { setNodeRef, isOver } = useDroppable({ id: track.id, data: { trackId: track.id } });
 

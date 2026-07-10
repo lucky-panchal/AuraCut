@@ -27,17 +27,14 @@ function fmtTime(sec: number) {
 }
 
 export default function PreviewPanel({ projectId }: Props) {
-  const { isPlaying, currentFrame, wsStatus, play, pause, stop, setWsStatus, setServerFrame } =
-    usePreviewStore((s) => ({
-      isPlaying: s.isPlaying,
-      currentFrame: s.currentFrame,
-      wsStatus: s.wsStatus,
-      play: s.play,
-      pause: s.pause,
-      stop: s.stop,
-      setWsStatus: s.setWsStatus,
-      setServerFrame: s.setServerFrame,
-    }));
+  const isPlaying = usePreviewStore((s) => s.isPlaying);
+  const currentFrame = usePreviewStore((s) => s.currentFrame);
+  const wsStatus = usePreviewStore((s) => s.wsStatus);
+  const play = usePreviewStore((s) => s.play);
+  const pause = usePreviewStore((s) => s.pause);
+  const stop = usePreviewStore((s) => s.stop);
+  const setWsStatus = usePreviewStore((s) => s.setWsStatus);
+  const setServerFrame = usePreviewStore((s) => s.setServerFrame);
 
   const duration = useTimelineStore((s) => s.duration);
 

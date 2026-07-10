@@ -11,22 +11,17 @@ const MIN_ZOOM = 10;
 const MAX_ZOOM = 500;
 
 export default function Timeline() {
-  const {
-    tracks, zoom, duration, playhead_position,
-    setZoom, setPlayhead, moveClip, splitClip, deleteClip, undo, redo,
-  } = useTimelineStore((s) => ({
-    tracks: s.tracks,
-    zoom: s.zoom,
-    duration: s.duration,
-    playhead_position: s.playhead_position,
-    setZoom: s.setZoom,
-    setPlayhead: s.setPlayhead,
-    moveClip: s.moveClip,
-    splitClip: s.splitClip,
-    deleteClip: s.deleteClip,
-    undo: s.undo,
-    redo: s.redo,
-  }));
+  const tracks = useTimelineStore((s) => s.tracks);
+  const zoom = useTimelineStore((s) => s.zoom);
+  const duration = useTimelineStore((s) => s.duration);
+  const playhead_position = useTimelineStore((s) => s.playhead_position);
+  const setZoom = useTimelineStore((s) => s.setZoom);
+  const setPlayhead = useTimelineStore((s) => s.setPlayhead);
+  const moveClip = useTimelineStore((s) => s.moveClip);
+  const splitClip = useTimelineStore((s) => s.splitClip);
+  const deleteClip = useTimelineStore((s) => s.deleteClip);
+  const undo = useTimelineStore((s) => s.undo);
+  const redo = useTimelineStore((s) => s.redo);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollLeft, setScrollLeft] = useState(0);

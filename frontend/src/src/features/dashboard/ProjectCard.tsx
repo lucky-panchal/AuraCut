@@ -9,10 +9,8 @@ interface Props {
 }
 
 export default function ProjectCard({ project, onOpen }: Props) {
-  const { updateProject, deleteProject } = useProjectStore((s) => ({
-    updateProject: s.updateProject,
-    deleteProject: s.deleteProject,
-  }));
+  const updateProject = useProjectStore((s) => s.updateProject);
+  const deleteProject = useProjectStore((s) => s.deleteProject);
 
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(project.name);
