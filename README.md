@@ -23,6 +23,7 @@ Full NLE (non-linear editor) that runs entirely in the browser — multi-track t
 ## Architecture Overview
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#ff0040", "primaryTextColor": "#000000", "primaryBorderColor": "#ff0040", "lineColor": "#facc15", "edgeLabelBackground": "#1a1a2e"}}}%%
 graph TB
     subgraph Browser["🌐 Browser (localhost:5173)"]
         FE["React + TypeScript<br/>Vite Dev Server"]
@@ -55,6 +56,16 @@ graph TB
     DAPHNE --> HTTP
     DAPHNE --> WS
     Backend --> MEDIA
+
+    classDef browser fill:#facc15,stroke:#ca8a04,color:#000
+    classDef backend fill:#ff0040,stroke:#cc0033,color:#fff
+    classDef worker fill:#ff6d00,stroke:#cc5700,color:#fff
+    classDef infra fill:#00e5ff,stroke:#00b8cc,color:#000
+
+    class FE browser
+    class DAPHNE,HTTP,WS backend
+    class TASKS worker
+    class PG,REDIS,MEDIA infra
 ```
 
 ---
@@ -62,6 +73,7 @@ graph TB
 ## Full File Connection Map
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#ff0040", "primaryTextColor": "#000000", "primaryBorderColor": "#ff0040", "lineColor": "#facc15"}}}%%
 graph LR
     subgraph FE_Entry["Frontend Entry"]
         MAIN["main.tsx"]
@@ -153,6 +165,22 @@ graph LR
     PREV_STORE --> TYPES
     PROJ_STORE --> TYPES
     AUTH_STORE --> TYPES
+
+    classDef entry fill:#facc15,stroke:#ca8a04,color:#000
+    classDef page fill:#ff0040,stroke:#cc0033,color:#fff
+    classDef panel fill:#00e5ff,stroke:#00b8cc,color:#000
+    classDef api fill:#ff6d00,stroke:#cc5700,color:#fff
+    classDef store fill:#39ff14,stroke:#2bcc0f,color:#000
+    classDef hook fill:#ff1493,stroke:#cc0f76,color:#fff
+    classDef types fill:#b0b0b0,stroke:#888,color:#000
+
+    class MAIN,APP,ROUTER entry
+    class LOGIN,REGISTER,PROFILE,DASHBOARD,PROJCARD,EDITOR page
+    class MEDIA_P,ASSET_ITEM,PREVIEW_P,PREVIEW_C,TIMELINE,TRACK,CLIP,PLAYHEAD,TIMERULER,SNAP,EFFECTS,COLOR,SUBTITLE,TEXTFORM,EXPORTMODAL,EXPORTPROG panel
+    class CLIENT,API_AUTH,API_PROJ,API_ASSETS,API_EXPORT api
+    class AUTH_STORE,PROJ_STORE,TL_STORE,PREV_STORE store
+    class WS_HOOK,AUTOSAVE hook
+    class TYPES types
 ```
 
 ---
@@ -160,6 +188,7 @@ graph LR
 ## Backend File Connection Map
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#ff0040", "primaryTextColor": "#000000", "primaryBorderColor": "#ff0040", "lineColor": "#facc15"}}}%%
 graph LR
     subgraph BE_Entry["Entry Points"]
         ASGI["asgi.py<br/>ProtocolTypeRouter"]
@@ -246,6 +275,24 @@ graph LR
     CELERY_APP --> ASSET_TASKS & PREV_TASKS & EXP_TASKS
     SETTINGS_DEV --> SETTINGS_BASE
     SETTINGS_PROD --> SETTINGS_BASE
+
+    classDef entry fill:#facc15,stroke:#ca8a04,color:#000
+    classDef config fill:#ff6d00,stroke:#cc5700,color:#fff
+    classDef core fill:#b0b0b0,stroke:#888,color:#000
+    classDef accounts fill:#00e5ff,stroke:#00b8cc,color:#000
+    classDef projects fill:#39ff14,stroke:#2bcc0f,color:#000
+    classDef assets fill:#ff6d00,stroke:#cc5700,color:#fff
+    classDef preview fill:#ff1493,stroke:#cc0f76,color:#fff
+    classDef export fill:#ff0040,stroke:#cc0033,color:#fff
+
+    class ASGI,WSGI,MANAGE,CELERY_APP entry
+    class URLS,ROUTING,SETTINGS_BASE,SETTINGS_DEV,SETTINGS_PROD config
+    class BASE_MODEL,PERMS,VALIDATORS,EXCEPTIONS core
+    class ACC_MODEL,ACC_SER,ACC_VIEWS,ACC_URLS accounts
+    class PROJ_MODEL,PROJ_SER,PROJ_VIEWS,PROJ_URLS,PROJ_SVC,PROJ_CON projects
+    class ASSET_MODEL,ASSET_SER,ASSET_VIEWS,ASSET_URLS,ASSET_SVC,ASSET_TASKS assets
+    class PREV_CON,PREV_TASKS preview
+    class EXP_MODEL,EXP_SER,EXP_VIEWS,EXP_URLS,EXP_SVC,EXP_TASKS,EXP_FFMPEG,EXP_CON export
 ```
 
 ---
