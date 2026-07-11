@@ -1,0 +1,190 @@
+/* ─── Timeline ────────────────────────────────────────────────────────────── */
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-primary);
+  user-select: none;
+}
+
+/* ─── Ruler ─── */
+.timeline__ruler {
+  position: relative;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.time-ruler {
+  position: relative;
+  height: 100%;
+}
+
+.time-ruler__tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.time-ruler__tick::before {
+  content: '';
+  width: 1px;
+  height: 6px;
+  background: var(--border);
+  margin-top: auto;
+}
+
+.time-ruler__label {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  padding-left: 3px;
+  margin-top: auto;
+  margin-bottom: 3px;
+}
+
+/* ─── Body ─── */
+.timeline__body {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* ─── Track ─── */
+.track {
+  position: relative;
+  height: 48px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+}
+
+.track--over { background: var(--accent-dim); }
+
+.track__label {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  width: 60px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* ─── Clip ─── */
+.clip {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  border-radius: var(--r-xs);
+  background: var(--accent-dim);
+  border: 1px solid var(--border-accent);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  cursor: grab;
+  transition: box-shadow var(--t-fast), border-color var(--t-fast);
+  min-width: 4px;
+}
+
+.clip:hover { box-shadow: 0 0 0 1px var(--accent); }
+
+.clip--selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), var(--shadow-accent);
+  background: rgba(124,92,252,0.28);
+}
+
+.clip--overlap {
+  border-color: var(--error);
+  background: rgba(239,68,68,0.2);
+}
+
+.clip--dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.clip__label {
+  flex: 1;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 10px;
+  pointer-events: none;
+}
+
+.clip__trim {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--t-fast);
+}
+
+.clip:hover .clip__trim { opacity: 1; }
+
+.clip__trim::after {
+  content: '';
+  width: 2px;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+.clip__trim--left  { left: 0; }
+.clip__trim--right { right: 0; }
+
+/* ─── Playhead ─── */
+.playhead {
+  position: absolute;
+  top: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.playhead__head {
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+  margin-left: -6px;
+  cursor: ew-resize;
+  pointer-events: all;
+  box-shadow: var(--shadow-accent);
+}
+
+.playhead__line {
+  width: 1px;
+  background: var(--accent);
+  margin-left: -0.5px;
+  opacity: 0.7;
+}

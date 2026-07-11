@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import useAuthStore from '../../store/useAuthStore';
+import './auth.css';
 
 interface FieldErrors {
   email?: string;
@@ -41,39 +42,71 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page">
-      <form className="auth-form" onSubmit={handleSubmit} noValidate>
-        <h1>Sign in</h1>
+      {/* animated blobs */}
+      <div className="auth-page__blob auth-page__blob--1" />
+      <div className="auth-page__blob auth-page__blob--2" />
+      <div className="auth-page__blob auth-page__blob--3" />
+      <div className="auth-page__grid" />
 
-        <label>
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-          />
-          {errors.email && <span className="field-error">{errors.email}</span>}
-        </label>
+      <div className="auth-card">
+        <div className="auth-card__border">
+          <div className="auth-card__inner">
 
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-          />
-          {errors.password && <span className="field-error">{errors.password}</span>}
-        </label>
+            {/* logo */}
+            <div className="auth-card__logo">
+              <div className="auth-card__logo-mark">✂</div>
+              <span className="auth-card__logo-text">Auracut</span>
+            </div>
 
-        <button type="submit" disabled={submitting}>
-          {submitting ? 'Signing in…' : 'Sign in'}
-        </button>
+            <h1 className="auth-card__heading">Welcome back</h1>
+            <p className="auth-card__sub">Sign in to continue editing your projects.</p>
 
-        <p>
-          No account? <Link to="/register">Register</Link>
-        </p>
-      </form>
+            <form className="auth-form" onSubmit={handleSubmit} noValidate>
+
+              <div className="auth-field">
+                <label className="auth-field__label">Email</label>
+                <div className="auth-field__input-wrap">
+                  <input
+                    className="auth-field__input"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                  />
+                </div>
+                {errors.email && <span className="auth-field__error">⚠ {errors.email}</span>}
+              </div>
+
+              <div className="auth-field">
+                <label className="auth-field__label">Password</label>
+                <div className="auth-field__input-wrap">
+                  <input
+                    className="auth-field__input"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                  />
+                </div>
+                {errors.password && <span className="auth-field__error">⚠ {errors.password}</span>}
+              </div>
+
+              <button className="auth-submit" type="submit" disabled={submitting}>
+                {submitting && <span className="auth-submit__spinner" />}
+                {submitting ? 'Signing in…' : 'Sign in'}
+              </button>
+            </form>
+
+            <p className="auth-footer">
+              No account?{' '}
+              <Link to="/register">Create one free</Link>
+            </p>
+
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

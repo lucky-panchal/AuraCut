@@ -1,7 +1,9 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
 import { updateProfile } from '../../api/auth';
+import './auth.css';
 
 export default function ProfilePage() {
   const user = useAuthStore((s) => s.user);
@@ -36,37 +38,75 @@ export default function ProfilePage() {
     }
   }
 
+  const initials = (user?.display_name || user?.username || '?')[0].toUpperCase();
+
   return (
     <div className="auth-page">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <h1>Profile</h1>
+      <div className="auth-page__blob auth-page__blob--1" />
+      <div className="auth-page__blob auth-page__blob--2" />
+      <div className="auth-page__blob auth-page__blob--3" />
+      <div className="auth-page__grid" />
 
-        {preview && (
-          <img
-            src={preview}
-            alt="avatar"
-            style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover' }}
-          />
-        )}
+      <div className="auth-card">
+        <div className="auth-card__border">
+          <div className="auth-card__inner">
 
-        <label>
-          Avatar
-          <input type="file" accept="image/*" onChange={handleAvatarChange} />
-        </label>
+            <div className="auth-card__logo">
+              <div className="auth-card__logo-mark">✂</div>
+              <span className="auth-card__logo-text">Auracut</span>
+            </div>
 
-        <label>
-          Display name
-          <input
-            type="text"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-          />
-        </label>
+            {/* avatar */}
+            <div className="profile-avatar-ring">
+              {preview
+                ? <img className="profile-avatar-img" src={preview} alt="avatar" />
+                : <div className="profile-avatar-placeholder">{initials}</div>
+              }
+              <label className="profile-avatar-change">
+                Change photo
+                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
+              </label>
+            </div>
 
-        <button type="submit" disabled={submitting}>
-          {submitting ? 'Saving…' : 'Save changes'}
-        </button>
-      </form>
+            <h1 className="auth-card__heading">Your profile</h1>
+            <p className="auth-card__sub">Update your display name and avatar.</p>
+
+            <form className="auth-form" onSubmit={handleSubmit}>
+              <div className="auth-field">
+                <label className="auth-field__label">Display name</label>
+                <input
+                  className="auth-field__input"
+                  type="text"
+                  placeholder="How should we call you?"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                />
+              </div>
+
+              <div className="auth-field">
+                <label className="auth-field__label">Username</label>
+                <input
+                  className="auth-field__input"
+                  type="text"
+                  value={user?.username ?? ''}
+                  disabled
+                  style={{ opacity: 0.4, cursor: 'not-allowed' }}
+                />
+              </div>
+
+              <button className="auth-submit" type="submit" disabled={submitting}>
+                {submitting && <span className="auth-submit__spinner" />}
+                {submitting ? 'Saving…' : 'Save changes'}
+              </button>
+            </form>
+
+            <p className="auth-footer">
+              <Link to="/">← Back to dashboard</Link>
+            </p>
+
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
