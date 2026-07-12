@@ -6,10 +6,15 @@ export interface AuthTokens {
   refresh: string;
 }
 
+export interface RegisterResponse extends AuthTokens {
+  user: import('../types').User;
+}
+
 export interface RegisterPayload {
   username: string;
   email: string;
   password: string;
+  password_confirm: string;
 }
 
 export interface LoginPayload {
@@ -23,7 +28,7 @@ export interface UpdateProfilePayload {
 }
 
 export const register = (payload: RegisterPayload) =>
-  client.post<AuthTokens>('/api/auth/register/', payload);
+  client.post<RegisterResponse>('/api/auth/register/', payload);
 
 export const login = (payload: LoginPayload) =>
   client.post<AuthTokens>('/api/auth/login/', payload);
