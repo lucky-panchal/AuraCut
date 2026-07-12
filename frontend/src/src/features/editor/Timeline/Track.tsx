@@ -41,19 +41,29 @@ export default function Track({ track, zoom, selectedClipId, onSelectClip }: Pro
     trimClip(clipId, clip.source_in, newSourceOut, clip.timeline_start, newEnd);
   }
 
+  const TRACK_ICONS: Record<string, string> = {
+    video:    '🎬',
+    audio:    '🎵',
+    subtitle: 'CC',
+  };
+
   return (
     <div
       ref={setNodeRef}
-      className={['track', isOver ? 'track--over' : ''].filter(Boolean).join(' ')}
-      style={{ position: 'relative', height: 48 }}
+      className={['track', `track--${track.type}`, isOver ? 'track--over' : ''].filter(Boolean).join(' ')}
+      style={{ position: 'relative', height: 52 }}
     >
-      <div className="track__label">{track.type}</div>
+      <div className="track__label">
+        <span className="track__label-icon">{TRACK_ICONS[track.type] ?? '▶'}</span>
+        {track.type}
+      </div>
       {track.clips.map((clip) => (
         <ClipComponent
           key={clip.id}
           clip={clip}
           zoom={zoom}
           trackId={track.id}
+          trackType={track.type}
           selected={clip.id === selectedClipId}
           overlapping={hasOverlap(track.clips, clip.id)}
           onSelect={onSelectClip}
