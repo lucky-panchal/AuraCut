@@ -20,7 +20,7 @@ export default function ColorFilterSliders({ clipId }: Props) {
   function update(key: keyof ColorFilter, value: number) {
     const next = { ...filter, [key]: value };
     setFilter(next);
-    addEffect(clipId, { type: 'color_filter', params: next });
+    addEffect(clipId, { type: 'color_filter', params: next as unknown as Record<string, unknown> });
   }
 
   return (
@@ -39,7 +39,7 @@ export default function ColorFilterSliders({ clipId }: Props) {
       ))}
       <button
         type="button"
-        onClick={() => { setFilter(DEFAULTS); addEffect(clipId, { type: 'color_filter', params: DEFAULTS }); }}
+        onClick={() => { setFilter(DEFAULTS); addEffect(clipId, { type: 'color_filter', params: DEFAULTS as unknown as Record<string, unknown> }); }}
       >
         Reset
       </button>
