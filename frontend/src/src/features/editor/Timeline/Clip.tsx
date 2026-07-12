@@ -6,6 +6,7 @@ interface Props {
   clip: ClipType;
   zoom: number;           // pixels per second
   trackId: string;
+  trackType: string;
   selected: boolean;
   overlapping: boolean;
   onSelect: (id: string) => void;
@@ -16,7 +17,7 @@ interface Props {
 const TRIM_HANDLE_PX = 8;
 
 export default function Clip({
-  clip, zoom, selected, overlapping, onSelect, onTrimStart, onTrimEnd,
+  clip, zoom, trackType, selected, overlapping, onSelect, onTrimStart, onTrimEnd,
 }: Props) {
   const left = clip.timeline_start * zoom;
   const width = Math.max(2, (clip.timeline_end - clip.timeline_start) * zoom);
@@ -71,11 +72,13 @@ export default function Clip({
       ref={setNodeRef}
       className={[
         'clip',
+        trackType === 'video' ? 'clip--video-type' : '',
+        trackType === 'audio' ? 'clip--audio-type' : '',
         selected ? 'clip--selected' : '',
         overlapping ? 'clip--overlap' : '',
         isDragging ? 'clip--dragging' : '',
       ].filter(Boolean).join(' ')}
-      style={{ left, width, position: 'absolute', top: 4, bottom: 4 }}
+      style={{ left, width, position: 'absolute', top: 6, bottom: 6 }}
       onClick={(e) => { e.stopPropagation(); onSelect(clip.id); }}
       {...listeners}
       {...attributes}
