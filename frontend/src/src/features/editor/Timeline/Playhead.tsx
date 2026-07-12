@@ -8,11 +8,11 @@ interface Props {
 }
 
 export default function Playhead({ zoom, scrollLeft, height }: Props) {
-  const { playhead_position, duration, setPlayhead } = useTimelineStore((s) => ({
-    playhead_position: s.playhead_position,
-    duration: s.duration,
-    setPlayhead: s.setPlayhead,
-  }));
+  // ⚠️ Must use SEPARATE selectors — returning a new object `(s) => ({ a, b })`
+  // every render breaks Zustand's getSnapshot cache, causing an infinite loop.
+  const playhead_position = useTimelineStore((s) => s.playhead_position);
+  const duration          = useTimelineStore((s) => s.duration);
+  const setPlayhead       = useTimelineStore((s) => s.setPlayhead);
 
   const dragRef = useRef<{ startX: number; startPos: number } | null>(null);
   const x = playhead_position * zoom - scrollLeft;
