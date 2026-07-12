@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import * as authApi from '../../api/auth';
 import useAuthStore from '../../store/useAuthStore';
 import './auth.css';
 
@@ -13,7 +12,7 @@ interface FieldErrors {
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const login = useAuthStore((s) => s.login);
+  const register = useAuthStore((s) => s.register);
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -35,17 +34,32 @@ export default function RegisterPage() {
     if (!validate()) return;
     setSubmitting(true);
     try {
-      await authApi.register({ username, email, password });
-      await login(email, password);
+      await register(username, email, password);
       navigate('/');
     } catch (err: unknown) {
-      const data = (err as { response?: { data?: Record<string, string[]> } }).response?.data;
-      if (data) {
-        setErrors({
-          username: data.username?.[0],
-          email: data.email?.[0],
-          password: data.password?.[0],
-        });
+      const responseData = (err as { response?: { data?: Record<string, unknown> } }).response?.data;
+      // The backend global_exception_handler wraps errors as:
+      //   { error: true, detail: { field: ['msg', ...] }, status_code: N }
+      // Unwrap the 'detail' layer; fall back to the raw response if not wrapped.
+      const fieldErrors = (
+        responseData?.detail && typeof responseData.detail === 'object'
+          ? responseData.detail
+          : responseData
+      ) as Record<string, string[]> | undefined;
+
+      if (fieldErrors) {
+        const newErrors: FieldErrors = {};
+        if (fieldErrors.username?.[0]) newErrors.username = fieldErrors.username[0];
+        if (fieldErrors.email?.[0]) newErrors.email = fieldErrors.email[0];
+        if (fieldErrors.password?.[0]) newErrors.password = fieldErrors.password[0];
+        // Handle non_field_errors or top-level string messages
+        const nonField = fieldErrors.non_field_errors?.[0] ?? (typeof fieldErrors === 'string' ? fieldErrors : null);
+        if (nonField) toast.error(nonField);
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+        } else if (!nonField) {
+          toast.error('Registration failed. Please try again.');
+        }
       } else {
         toast.error('Registration failed. Please try again.');
       }
