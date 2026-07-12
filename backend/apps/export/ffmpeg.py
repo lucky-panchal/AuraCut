@@ -9,7 +9,8 @@ Two command types:
 
 Design notes:
     - All methods are static — no state, pure functions of their inputs
-    - FFmpeg availability is checked at import time via _check_ffmpeg()
+    - FFmpeg availability is checked lazily at first use (not at import time),
+      so migrate / runserver work even without FFmpeg installed locally.
     - filter_complex is built programmatically from the timeline JSON
     - Progress is parsed from FFmpeg stderr "out_time_ms=" lines
 
@@ -59,10 +60,14 @@ _FORMAT_CODEC_MAP = {
 # FFmpeg availability check
 # ---------------------------------------------------------------------------
 
-def _check_ffmpeg() -> None:
+
+
+def _require_ffmpeg() -> None:
     """
     Verifies FFmpeg and FFprobe are available on PATH.
-    Called at module import — fails fast at startup, not at runtime.
+    Called lazily inside export/preview methods — NOT at import time —
+    so that Django can start (migrate, runserver) without FFmpeg installed
+    locally. FFmpeg is only required when actually running an export job.
     Raises ImproperlyConfigured if not found.
     """
     for binary in ("ffmpeg", "ffprobe"):
@@ -73,8 +78,6 @@ def _check_ffmpeg() -> None:
                 "In Docker, add 'ffmpeg' to the Dockerfile apt-get install list."
             )
 
-
-_check_ffmpeg()
 
 
 # ---------------------------------------------------------------------------
@@ -128,6 +131,7 @@ class FFmpegCommandBuilder:
         Returns:
             List of strings forming the complete FFmpeg command.
         """
+        _require_ffmpeg()
         tracks = timeline_state.get("tracks", [])
         video_tracks = [t for t in tracks if t["type"] == "video"]
         audio_tracks = [t for t in tracks if t["type"] == "audio"]
@@ -288,6 +292,7 @@ class FFmpegCommandBuilder:
         Returns:
             FFmpeg command as list of strings.
         """
+        _require_ffmpeg()
         asset_id = segment.get("asset_id", "")
         source_in = segment.get("source_in", 0)
 
