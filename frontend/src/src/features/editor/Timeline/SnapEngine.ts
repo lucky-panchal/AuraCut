@@ -1,4 +1,4 @@
-import type { Clip } from '../types';
+import type { Clip } from '../../../types';
 
 export interface SnapPoint {
   position: number;
