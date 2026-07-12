@@ -9,11 +9,41 @@ import logging
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import UserProfile
 
 logger = logging.getLogger("auracut")
 
+
+class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Allows login with email instead of username.
+    Looks up the User by email, then delegates to the parent serializer.
+
+    Thread-safe: uses instance-level override instead of mutating the class
+    attribute, which would corrupt concurrent login requests.
+    """
+    username_field = 'email'
+
+    def validate(self, attrs: dict) -> dict:
+        email = attrs.get('email', '').lower()
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({'email': 'No account found with this email.'})
+
+        # Build attrs with actual username so the parent can authenticate
+        attrs['username'] = user.username
+        attrs['password'] = attrs.get('password', '')
+
+        # Temporarily override username_field on this *instance* only (thread-safe)
+        self.username_field = User.USERNAME_FIELD
+        try:
+            data = super().validate(attrs)
+        finally:
+            self.username_field = 'email'
+        return data
 
 class RegisterSerializer(serializers.ModelSerializer):
     """
@@ -78,14 +108,31 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSummarySerializer(serializers.ModelSerializer):
     """
     Lightweight read-only user representation returned after login/register.
+
+    NOTE: display_name uses a SerializerMethodField instead of source="profile.name"
+    because immediately after registration the profile reverse-relation is not
+    cached on the in-memory User instance (the post_save signal creates it in
+    the DB but the ORM cache on the object is stale). Using getattr with a
+    fallback avoids the RelatedObjectDoesNotExist exception.
     """
 
-    display_name = serializers.CharField(source="profile.name", read_only=True)
+    display_name = serializers.SerializerMethodField()
     avatar_url = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ("id", "username", "email", "display_name", "avatar_url")
+
+    def get_display_name(self, obj: User) -> str:
+        """Return display_name if set, otherwise fall back to username."""
+        profile = getattr(obj, "profile", None)
+        if profile is None:
+            # Attempt a DB fetch (e.g. right after registration signal)
+            try:
+                profile = UserProfile.objects.get(user=obj)
+            except UserProfile.DoesNotExist:
+                return obj.username
+        return profile.display_name or obj.username
 
     def get_avatar_url(self, obj: User) -> str | None:
         profile = getattr(obj, "profile", None)
