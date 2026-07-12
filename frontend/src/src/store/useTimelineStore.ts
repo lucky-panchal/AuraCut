@@ -47,11 +47,17 @@ function cloneState(s: Pick<TimelineStore, 'tracks' | 'playhead_position' | 'zoo
   };
 }
 
+const DEFAULT_TRACKS: Track[] = [
+  { id: 'video-1', type: 'video', index: 0, clips: [] },
+  { id: 'audio-1', type: 'audio', index: 1, clips: [] },
+  { id: 'subtitle-1', type: 'subtitle', index: 2, clips: [] },
+];
+
 const useTimelineStore = create<TimelineStore>((set, get) => ({
-  tracks: [],
+  tracks: [...DEFAULT_TRACKS],
   playhead_position: 0,
   zoom: 100,
-  duration: 0,
+  duration: 60,
   isDirty: false,
   past: [],
   future: [],
@@ -209,7 +215,19 @@ const useTimelineStore = create<TimelineStore>((set, get) => ({
   },
 
   loadTimeline: (state) => {
-    set({ ...state, isDirty: false, past: [], future: [] });
+    if (!state || !state.tracks || state.tracks.length === 0) {
+      set({
+        tracks: [...DEFAULT_TRACKS],
+        playhead_position: 0,
+        zoom: 100,
+        duration: 60,
+        isDirty: false,
+        past: [],
+        future: [],
+      });
+    } else {
+      set({ ...state, isDirty: false, past: [], future: [] });
+    }
   },
 
   markClean: () => set({ isDirty: false }),
