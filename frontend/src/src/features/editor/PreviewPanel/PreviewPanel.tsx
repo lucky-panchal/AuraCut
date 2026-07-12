@@ -53,12 +53,7 @@ export default function PreviewPanel({ projectId }: Props) {
   // Expose for parent use
   void handleEffectChange;
 
-  const wsIndicator: Record<WsStatus, string> = {
-    connecting: '🟡',
-    open: '🟢',
-    closed: '🔴',
-    failed: '🔴',
-  };
+
 
   return (
     <div className="preview-panel">
@@ -67,8 +62,18 @@ export default function PreviewPanel({ projectId }: Props) {
       </div>
 
       <div className="preview-panel__controls">
-        <button onClick={stop} title="Stop">⏹</button>
-        <button onClick={isPlaying ? pause : play} title={isPlaying ? 'Pause' : 'Play'}>
+        <button
+          className="preview-panel__ctrl-btn"
+          onClick={stop}
+          title="Stop"
+        >
+          ⏹
+        </button>
+        <button
+          className={['preview-panel__ctrl-btn', isPlaying ? 'preview-panel__ctrl-btn--active' : ''].filter(Boolean).join(' ')}
+          onClick={isPlaying ? pause : play}
+          title={isPlaying ? 'Pause' : 'Play'}
+        >
           {isPlaying ? '⏸' : '▶'}
         </button>
 
@@ -76,9 +81,12 @@ export default function PreviewPanel({ projectId }: Props) {
           {fmtTime(currentFrame)} / {fmtTime(duration)}
         </span>
 
-        <span className="preview-panel__ws" title={`WebSocket: ${wsStatus}`}>
-          {wsIndicator[wsStatus]}
-        </span>
+        <div className="preview-panel__spacer" />
+
+        <div className="preview-panel__ws" title={`WebSocket Connection: ${wsStatus}`}>
+          <div className={`preview-panel__ws-dot preview-panel__ws-dot--${wsStatus}`} />
+          <span style={{ textTransform: 'capitalize' }}>{wsStatus}</span>
+        </div>
       </div>
     </div>
   );
