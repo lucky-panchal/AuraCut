@@ -16,7 +16,7 @@ interface ProjectState {
   setSaveStatus: (status: SaveStatus) => void;
 }
 
-const useProjectStore = create<ProjectState>((set, get) => ({
+const useProjectStore = create<ProjectState>((set) => ({
   projects: [],
   currentProject: null,
   saveStatus: 'saved',
