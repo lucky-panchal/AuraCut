@@ -87,7 +87,10 @@ export default function MediaPanel({ projectId }: Props) {
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
       >
-        <span>Drop files here or click to upload</span>
+        <div className="media-panel__dropzone-icon">📤</div>
+        <div className="media-panel__dropzone-text">
+          Drag & drop files or <strong>browse</strong>
+        </div>
         <input
           ref={inputRef}
           type="file"
@@ -99,12 +102,16 @@ export default function MediaPanel({ projectId }: Props) {
       </div>
 
       {/* Upload progress */}
-      {Object.entries(uploads).map(([key, entry]) => (
-        <div key={key} className="media-panel__upload-progress">
-          <span className="media-panel__upload-name">{entry.name}</span>
-          <ProgressBar value={entry.progress} label={`${entry.progress}%`} />
+      {Object.keys(uploads).length > 0 && (
+        <div className="media-panel__uploads">
+          {Object.entries(uploads).map(([key, entry]) => (
+            <div key={key} className="media-panel__upload-entry">
+              <span className="media-panel__upload-name">{entry.name}</span>
+              <ProgressBar value={entry.progress} label={`${entry.progress}%`} />
+            </div>
+          ))}
         </div>
-      ))}
+      )}
 
       {/* Asset list */}
       <div className="media-panel__list">
