@@ -5,12 +5,17 @@ import TimeRuler from './TimeRuler';
 import Track from './Track';
 import Playhead from './Playhead';
 
-const TRACK_HEIGHT = 48;
-const RULER_HEIGHT = 24;
+const TRACK_HEIGHT = 52;
+const RULER_HEIGHT = 28;
 const MIN_ZOOM = 10;
 const MAX_ZOOM = 500;
 
-export default function Timeline() {
+interface TimelineProps {
+  selectedClipId: string | null;
+  onSelectClip: (id: string | null) => void;
+}
+
+export default function Timeline({ selectedClipId, onSelectClip }: TimelineProps) {
   const tracks = useTimelineStore((s) => s.tracks);
   const zoom = useTimelineStore((s) => s.zoom);
   const duration = useTimelineStore((s) => s.duration);
@@ -26,7 +31,6 @@ export default function Timeline() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [containerWidth, setContainerWidth] = useState(800);
-  const [selectedClipId, setSelectedClipId] = useState<string | null>(null);
 
   // Observe container width
   useEffect(() => {
@@ -62,9 +66,9 @@ export default function Timeline() {
     if ((e.target as HTMLElement).tagName === 'INPUT') return;
     if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
     if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
-    if (e.key === 'Delete' && selectedClipId) { deleteClip(selectedClipId); setSelectedClipId(null); }
+    if (e.key === 'Delete' && selectedClipId) { deleteClip(selectedClipId); onSelectClip(null); }
     if (e.key === 's' && !e.ctrlKey && selectedClipId) { splitClip(selectedClipId, playhead_position); }
-  }, [undo, redo, deleteClip, splitClip, selectedClipId, playhead_position]);
+  }, [undo, redo, deleteClip, splitClip, selectedClipId, playhead_position, onSelectClip]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -87,11 +91,28 @@ export default function Timeline() {
   }
 
   const totalWidth = Math.max(containerWidth, duration * zoom + 200);
-  const totalHeight = tracks.length * TRACK_HEIGHT;
+  const totalHeight = Math.max(tracks.length * TRACK_HEIGHT, 1); // guard: never 0
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="timeline" onWheel={handleWheel} ref={containerRef}>
+
+        {/* Toolbar */}
+        <div className="timeline__toolbar">
+          <span className="timeline__toolbar-title">Timeline</span>
+          <button
+            className="timeline__tool-btn"
+            onClick={() => setZoom(Math.max(MIN_ZOOM, zoom * 0.8))}
+            title="Zoom out"
+          >−</button>
+          <span className="timeline__zoom-label">{Math.round(zoom)}px</span>
+          <button
+            className="timeline__tool-btn"
+            onClick={() => setZoom(Math.min(MAX_ZOOM, zoom * 1.25))}
+            title="Zoom in"
+          >+</button>
+        </div>
+
         {/* Ruler */}
         <div className="timeline__ruler" style={{ height: RULER_HEIGHT }} onClick={handleRulerClick}>
           <TimeRuler
@@ -116,7 +137,7 @@ export default function Timeline() {
                 track={track}
                 zoom={zoom}
                 selectedClipId={selectedClipId}
-                onSelectClip={setSelectedClipId}
+                onSelectClip={onSelectClip}
               />
             ))}
           </div>
