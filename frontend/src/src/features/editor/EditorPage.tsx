@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import useProjectStore from '../../store/useProjectStore';
 import useTimelineStore from '../../store/useTimelineStore';
@@ -11,6 +11,12 @@ import EffectsPanel from './EffectsPanel/EffectsPanel';
 import Timeline from './Timeline/Timeline';
 import ExportModal from './ExportModal/ExportModal';
 
+// Import CSS resources
+import './editor.css';
+import './MediaPanel/media-panel.css';
+import './PreviewPanel/preview-panel.css';
+import './Timeline/timeline.css';
+
 const SAVE_STATUS_LABEL: Record<string, string> = {
   saved: '✓ Saved',
   unsaved: '● Unsaved',
@@ -20,6 +26,7 @@ const SAVE_STATUS_LABEL: Record<string, string> = {
 
 export default function EditorPage() {
   const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const [exportOpen, setExportOpen] = useState(false);
   const [selectedClipId, setSelectedClipId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,6 +42,9 @@ export default function EditorPage() {
   const playhead_position = useTimelineStore((s) => s.playhead_position);
   const isDirty = useTimelineStore((s) => s.isDirty);
   const markClean = useTimelineStore((s) => s.markClean);
+
+  const pastLength = useTimelineStore((s) => s.past.length);
+  const futureLength = useTimelineStore((s) => s.future.length);
 
   // Auto-save hook
   useAutoSave(projectId!);
@@ -100,35 +110,75 @@ export default function EditorPage() {
     <div className="editor">
       {/* Top bar */}
       <header className="editor__topbar">
+        <button className="editor__back-btn" onClick={() => navigate('/')}>
+          <span>←</span> Dashboard
+        </button>
+        <div className="editor__divider" />
         <span className="editor__project-name">{projectName}</span>
         <span className={`editor__save-status editor__save-status--${saveStatus}`}>
           {SAVE_STATUS_LABEL[saveStatus]}
         </span>
+        <div className="editor__topbar-spacer" />
         <div className="editor__topbar-actions">
-          <button onClick={undo} title="Undo (Ctrl+Z)">↩</button>
-          <button onClick={redo} title="Redo (Ctrl+Y)">↪</button>
-          <button className="btn btn--primary" onClick={() => setExportOpen(true)}>Export</button>
+          <button
+            className="editor__icon-btn"
+            onClick={undo}
+            title="Undo (Ctrl+Z)"
+            disabled={pastLength === 0}
+          >
+            ⤺
+          </button>
+          <button
+            className="editor__icon-btn"
+            onClick={redo}
+            title="Redo (Ctrl+Y)"
+            disabled={futureLength === 0}
+          >
+            ⤻
+          </button>
+          <button className="editor__export-btn" onClick={() => setExportOpen(true)}>
+            📤 Export
+          </button>
         </div>
       </header>
 
-      {/* Main grid */}
-      <div className="editor__grid">
-        <aside className="editor__media">
-          <MediaPanel projectId={projectId!} />
-        </aside>
+      {/* Main Content Layout */}
+      <div className="editor__main">
+        {/* Left Panel: Media */}
+        <div className="editor__panel">
+          <div className="editor__panel-header">
+            <span className="editor__panel-title">Media Assets</span>
+          </div>
+          <div className="editor__panel-body">
+            <MediaPanel projectId={projectId!} />
+          </div>
+        </div>
 
-        <main className="editor__preview">
-          <PreviewPanel projectId={projectId!} />
-        </main>
+        {/* Center Panel: Preview */}
+        <div className="editor__panel">
+          <div className="editor__panel-header">
+            <span className="editor__panel-title">Video Preview</span>
+          </div>
+          <div className="editor__panel-body">
+            <PreviewPanel projectId={projectId!} />
+          </div>
+        </div>
 
-        <aside className="editor__effects">
-          <EffectsPanel selectedClipId={selectedClipId} />
-        </aside>
-
-        <section className="editor__timeline">
-          <Timeline />
-        </section>
+        {/* Right Panel: Effects */}
+        <div className="editor__panel">
+          <div className="editor__panel-header">
+            <span className="editor__panel-title">Properties & Effects</span>
+          </div>
+          <div className="editor__panel-body">
+            <EffectsPanel selectedClipId={selectedClipId} />
+          </div>
+        </div>
       </div>
+
+      {/* Timeline row */}
+      <section className="editor__timeline">
+        <Timeline selectedClipId={selectedClipId} onSelectClip={setSelectedClipId} />
+      </section>
 
       <ExportModal
         projectId={projectId!}
