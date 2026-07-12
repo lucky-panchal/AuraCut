@@ -151,3 +151,16 @@ select option { background: var(--bg-tertiary); }
   0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
   50%       { box-shadow: 0 0 16px 4px var(--accent-glow); }
 }
+
+/* ─── Spinner utility ─── */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(124, 92, 252, 0.25);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
