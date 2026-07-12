@@ -44,7 +44,7 @@ export default function SubtitleEditor({ clipId }: Props) {
   function applyEntries(list: SubtitleEntry[]) {
     setEntries(list);
     list.forEach((entry) => {
-      addEffect(clipId, { type: 'subtitle', params: entry });
+      addEffect(clipId, { type: 'subtitle', params: entry as unknown as Record<string, unknown> });
     });
   }
 
