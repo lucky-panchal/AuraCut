@@ -7,6 +7,7 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   login: (email: string, password: string) => Promise<void>;
+  register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshAccessToken: () => Promise<void>;
   setUser: (user: User) => void;
@@ -23,6 +24,15 @@ const useAuthStore = create<AuthState>((set, get) => ({
     localStorage.setItem('refresh_token', data.refresh);
     const profile = await authApi.getProfile();
     set({ accessToken: data.access, refreshToken: data.refresh, user: profile.data });
+  },
+
+  register: async (username, email, password) => {
+    // register returns { user, access, refresh } — use them directly to avoid
+    // a redundant second login round-trip.
+    const { data } = await authApi.register({ username, email, password, password_confirm: password });
+    localStorage.setItem('access_token', data.access);
+    localStorage.setItem('refresh_token', data.refresh);
+    set({ accessToken: data.access, refreshToken: data.refresh, user: data.user });
   },
 
   logout: async () => {
