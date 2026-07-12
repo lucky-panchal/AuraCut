@@ -16,17 +16,17 @@ export default defineConfig({
     proxy: {
       // REST API
       '/api': {
-        target: 'http://backend:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
       // Media files
       '/media': {
-        target: 'http://backend:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
       // WebSocket
       '/ws': {
-        target: 'ws://backend:8000',
+        target: 'ws://localhost:8000',
         ws: true,
         changeOrigin: true,
       },
